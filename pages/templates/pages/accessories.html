@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+
+{% block page_content %}
+
+  {% include 'pages/navbar.html' %}
+
+<main role="main" class="container mt-4">
+    <div class="page-header-equipment">
+        <h1>Katalog Peralatan Tambahan</h1>
+        <p class="lead">Lengkapi kebutuhan olahraga Anda dengan pilihan peralatan kami.</p>
+    </div>
+
+    <div class="row">
+        <?php if (mysqli_num_rows($result_tambahan) > 0) : ?>
+            <?php while ($item = mysqli_fetch_assoc($result_tambahan)) : ?>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card equipment-item-card">
+                    <div class="card-body">
+                        <div class="icon-placeholder">
+                            <?php echo get_icon_for_item($item['Nama']); ?>
+                        </div>
+                        <div>
+                            <h5 class="card-title"><?php echo htmlspecialchars($item['Nama']);?></h5>
+                            <p class="item-price"><?php echo format_rupiah_peralatan($item['Harga']);?> <span class="text-muted small">/ item</span></p>
+                        </div>
+                        <div>
+                           <a href="field_catalog.php" class="btn btn-outline-primary btn-sm mt-2">Pilih Saat Booking Lapangan</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <div class="col-12">
+                <div class="alert alert-info no-items-alert">
+                    <h4 class="alert-heading">Peralatan Belum Tersedia</h4>
+                    <p>Saat ini belum ada peralatan tambahan yang terdaftar. Silakan cek kembali nanti.</p>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="info-text">
+        <p class="mb-0"><strong>Catatan:</strong> Semua peralatan tambahan di atas dapat dipilih dan ditambahkan saat Anda melakukan proses pemesanan lapangan.</p>
+    </div>
+    <hr class="mt-5 mb-4">
+</main>
+
+  {% include 'pages/footer.html' %}
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 70px; 
+        }
+        .navbar-brand-custom {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand-custom svg {
+            margin-right: 8px;
+        }
+        .page-header-equipment {
+            background: linear-gradient(to right, #17a2b8, #138496); 
+            color: white;
+            padding: 2.5rem 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border-radius: .3rem;
+        }
+        .page-header-equipment h1 {
+            font-weight: bold;
+            font-size: 2.5rem;
+        }
+        .page-header-equipment .lead {
+            font-size: 1.15rem;
+        }
+        .equipment-item-card {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: .5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            height: 100%; 
+            text-align: center; 
+        }
+        .equipment-item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0.4rem 1.2rem rgba(0,0,0,0.12);
+        }
+        .equipment-item-card .card-body {
+            padding: 1.5rem; 
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+        .equipment-item-card .icon-placeholder {
+            font-size: 3rem; 
+            color: #6c757d; 
+            margin-bottom: 1rem;
+            line-height: 1; /* Agar ikon SVG tidak menambah tinggi berlebih */
+        }
+        .equipment-item-card .card-title {
+            font-weight: bold;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+            color: #343a40;
+        }
+        .equipment-item-card .item-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        .info-text {
+            background-color: #e9ecef;
+            padding: 1rem;
+            border-radius: .3rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+         .no-items-alert {
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+
+  {% endblock page_content %}

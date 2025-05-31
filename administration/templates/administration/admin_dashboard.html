@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+
+{% block page_content %}
+
+<div class="container">
+  
+  {% include 'administration/navbar.html' %}
+
+    <div class="jumbotron p-3 p-md-5 text-white rounded bg-dark">
+      <div class="col-md-6 px-0">
+        <h1 class="display-4 font-italic">Halaman Admin</h1>
+        <p class="lead my-3">Dasbor Admin Penyewaan Futsal: Pusat kendali untuk mengelola lapangan, keuangan, reservasi, peralatan, dan riwayat booking Anda.</p>
+      </div>
+    </div>
+
+    <div class="row mb-2">
+      <div class="col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+          <div class="card-body d-flex flex-column align-items-start">
+            <strong class="d-inline-block mb-2 text-primary">Data</strong>
+            <h3 class="mb-0">
+              <a class="text-dark" href="{% url 'admin_fields' %}">Data Lapangan</a>
+            </h3>
+            <p class="card-text mb-auto">Kelola detail, harga, dan juga status booking seperti konfirmasi atau batal pada tiap lapangan yang tersedia.</p>
+            <div class="d-flex justify-content-between mt-2">
+              <a class="p-2 mr-2 btn btn-sm btn-outline-success" href="{% url 'admin_fields' %}">Buka Panel</a>
+            </div>
+          </div>
+          {% load static %}
+          <img class="card-img-right flex-auto d-none d-md-block" src="/media/project_images/data_lapangan.jpg" style="width: 30vh;" alt="Iki data lapangan">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+          <div class="card-body d-flex flex-column align-items-start">
+            <strong class="d-inline-block mb-2 text-success">Keuangan</strong>
+            <h3 class="mb-0">
+              <a class="text-dark" href="{% url 'admin_report' %}">Laporan Keuangan</a>
+            </h3>
+            <p class="card-text mb-auto">Pantau semua transaksi & total pendapatan dari seluruh penyewaan lapangan futsal.</p>
+            <div class="d-flex justify-content-between mt-2">
+              <a class="p-2 mr-2 btn btn-sm btn-outline-success" href="{% url 'admin_report' %}">Buka Panel</a>
+            </div>
+          </div>
+          <img class="card-img-right flex-auto d-none d-md-block" src="/media/project_images/laporan_keuangan.jpg" style="width: 30vh;" alt="Iki laporan">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+          <div class="card-body d-flex flex-column align-items-start">
+            <strong class="d-inline-block mb-2 text-info">Peralatan</strong>
+            <h3 class="mb-0">
+              <a class="text-dark" href="{% url 'admin_accessories' %}">Persediaan Peralatan</a>
+            </h3>
+            <p class="card-text mb-auto"> Kelola stok serta ketersediaan semua peralatan pendukung yang dapat Anda sewakan.</p>
+            <div class="d-flex justify-content-between mt-2">
+              <a class="p-2 mr-2 btn btn-sm btn-outline-success" href="{% url 'admin_accessories' %}">Buka Panel</a>
+            </div>
+          </div>
+          <img class="card-img-right flex-auto d-none d-md-block" src="/media/project_images/peralatan.jpg" style="width: 30vh;" alt="Iki data peralatan">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+          <div class="card-body d-flex flex-column align-items-start">
+            <strong class="d-inline-block mb-2 text-warning">Riwayat</strong>
+            <h3 class="mb-0">
+              <a class="text-dark" href="{% url 'admin_history' %}">Riwayat Booking</a>
+            </h3>
+            <p class="card-text mb-auto">Tinjau semua arsip lengkap & analisis seluruh transaksi booking yang sudah lalu.</p>
+            <div class="d-flex justify-content-between mt-2">
+              <a class="p-2 mr-2 btn btn-sm btn-outline-success" href="{% url 'admin_history' %}">Buka Panel</a>
+            </div>
+          </div>
+          <img class="card-img-right flex-auto d-none d-md-block" src="/media/project_images/riwayat_booking.jpg" style="width: 30vh;" alt="Iki riwayat booking">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include 'administration/footer.html' %}
+
+  
+
+  <script>
+    Holder.addTheme('thumb', {
+      bg: '#55595c',
+      fg: '#eceeef',
+      text: 'Thumbnail'
+    });
+  </script>
+
+
+
+  {% endblock page_content %}
