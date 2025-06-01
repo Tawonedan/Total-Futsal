@@ -22,17 +22,17 @@ from django.conf.urls.static import static
 from django.urls.conf import include
 
 from accounts import views as account_views
-from fields import views as fields_views
+
 
 
 urlpatterns = [
-    # path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     path("", include("pages.urls")),
     path("projects/", include("projects.urls")),
     path('', include('accounts.urls')),
-    path('admin/', include('administration.urls')),
+    # path('admin/', include('administration.urls')),
     path('register/', account_views.register, name='register'),
-    # path('fields/', fields_views.fields_catalog, name='fields'),
+
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

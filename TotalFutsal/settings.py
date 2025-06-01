@@ -34,8 +34,6 @@ INSTALLED_APPS = [
     "projects.apps.ProjectsConfig",
     "pages.apps.PagesConfig",
     "accounts.apps.AccountsConfig",
-    "fields.apps.FieldsConfig",
-    "bookings.apps.BookingsConfig",
     "administration.apps.AdministrationConfig",
     'django.contrib.admin',
     'django.contrib.auth',
@@ -133,3 +131,5 @@ MEDIA_ROOT = BASE_DIR / "uploads/"
 MEDIA_URL = "media/"
 
 LOGIN_REDIRECT_URL = 'user_home'
+
+AUTH_USER_MODEL = 'accounts.Pengguna'

@@ -1,23 +1,8 @@
 from django.views import View
 from django.shortcuts import render
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin # Import LoginRequiredMixin
-
-
-
-class CustomLoginView(LoginView):
-    template_name = 'accounts/login.html'
-    redirect_authenticated_user = True
-
-    def get_success_url(self):
-        # Periksa apakah pengguna adalah staf (admin)
-        if self.request.user.is_staff:
-            # Jika admin, arahkan ke halaman admin kustom Anda
-            return reverse_lazy('admin_dashboard') # Ganti 'admin_dashboard' dengan nama URL Anda
-        else:
-            # Jika bukan admin, arahkan ke halaman user_home (default)
-            return reverse_lazy('user_home') # Ganti 'user_home' dengan nama URL default Anda
 
 
 class UserHomeView(LoginRequiredMixin, View):
