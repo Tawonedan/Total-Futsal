@@ -31,6 +31,12 @@ class UserAboutView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, self.template_name)
 
+class UserBookView(LoginRequiredMixin, View):
+    template_name = 'accounts/book.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
 
 class UserHistoryView(LoginRequiredMixin, View):
     template_name = 'accounts/history.html'

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+<!-- <h2>Daftar Akun</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Daftar</button>
+</form>
+<p>Sudah punya akun? <a href="{% url 'login' %}">Login di sini</a></p> -->
+
+
+{% block page_content %}
+
+{% include 'pages/navbar.html' %}
+
+<div class="register-container">
+    <div class="register-card">
+        <form method="post" enctype="multipart/form-data" class="form-signin">
+            {% csrf_token %}
+            {% if form.errors %}
+            
+            <div class="alert alert-danger">
+              <ul>
+                {% for field in form %}
+                  {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+
+            <div class="text-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-person-plus-fill mb-3 text-primary" viewBox="0 0 16 16">
+                    <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H12V5.5a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                <h1 class="form-signin-heading">Buat Akun Baru</h1>
+            </div>
+            
+            <div class="form-group">
+                <input type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus name="Nama">
+            </div>
+
+            <div class="form-group">
+                <input type="email" id="inputEmail" class="form-control" placeholder="Alamat Email" required name="email">
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required name="password1">
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Konfirmasi Password" required name="password2">
+            </div>
+
+            <button class="btn btn-lg btn-register btn-block" type="submit" name="register">Daftar Akun</button>
+            
+            <p class="text-center login-link">
+                Sudah punya akun? <a href="{% url 'login' %}">Masuk di sini</a>
+            </p>
+            <p class="mt-4 mb-1 text-muted text-center">&copy; 2K25 Penyewaan Olahraga</p>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert-container .alert');
+        alerts.forEach(function(alert) {
+            $(alert).fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        });
+    }, 5000);
+
+    const formRegister = document.querySelector('.form-signin');
+    if (formRegister) {
+        formRegister.addEventListener('submit', function(event) {
+            const password = document.getElementById('inputPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const alertContainer = document.querySelector('.alert-container');
+            
+            let existingAlert = alertContainer.querySelector('.alert-password-match');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            if (password !== confirmPassword) {
+                event.preventDefault(); 
+                let alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger alert-dismissible fade show alert-password-match';
+                alertDiv.setAttribute('role', 'alert');
+                alertDiv.innerHTML = 'Password dan Konfirmasi Password tidak cocok!' +
+                                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                                     '<span aria-hidden="true">&times;</span></button>';
+                alertContainer.prepend(alertDiv); 
+                 window.setTimeout(function() {
+                    $(alertDiv).fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, 5000);
+            }
+        });
+    }
+</script>
+
+    <style>
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 56px; 
+        }
+        .navbar-brand-custom {
+            font-weight: bold;
+            display: flex; 
+            align-items: center; 
+        }
+        .navbar-brand-custom svg { 
+            margin-right: 8px;
+        }
+        .register-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 2rem 0;
+        }
+        .register-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem 2.5rem;
+            border-radius: .75rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .register-card .form-signin-heading {
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: #333;
+        }
+        .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 10px; 
+        }
+        .form-control:focus {
+            z-index: 2;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .btn-register {
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 0.75rem;
+            margin-top: 1.5rem;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-register:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .login-link {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .alert-container {
+            max-width: 420px;
+            margin: 0 auto 1rem auto;
+        }
+    </style>
+
+{% endblock page_content %}

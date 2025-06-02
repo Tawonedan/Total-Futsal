@@ -1,6 +1,9 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import CustomUserCreationForm
+from django.contrib.auth import login
+
 
 class CustomLoginView(LoginView):
     template_name = 'pages/login.html'
@@ -14,6 +17,17 @@ class CustomLoginView(LoginView):
         else:
 
             return reverse_lazy('user_home') 
+        
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('user_home')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'pages/register.html', {'form': form})
 
 def home(request):
     return render(request, "pages/home.html", {})

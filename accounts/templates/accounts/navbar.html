@@ -17,10 +17,10 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'fields' %}">Booking</a>
+          <a class="nav-link" href="{% url 'user_book' %}">Booking</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'history' %}">Riwayat</a>
+          <a class="nav-link" href="{% url 'user_history' %}">Riwayat</a>
         </li>
          <li class="nav-item">
           <a class="nav-link" href="{% url 'user_about' %}">Tentang Kami</a>
@@ -32,7 +32,7 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right">
           <a class="dropdown-item" href="{% url 'user_profile' %}">Profil Saya</a>
-          <a class="dropdown-item" href="{% url 'history' %}">Riwayat Booking</a>
+          <a class="dropdown-item" href="{% url 'user_history' %}">Riwayat Booking</a>
           <div class="dropdown-divider"></div>
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}

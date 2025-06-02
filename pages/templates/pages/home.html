@@ -31,7 +31,7 @@
                         </div>
                         <h5 class="card-title">Lihat Pilihan Lapangan</h5>
                         <p class="card-text">Jelajahi berbagai lapangan futsal dan olahraga lainnya yang tersedia di platform kami.</p>
-                        <a class="btn btn-futsal btn-block" href="field_catalog.php" role="button">Telusuri Lapangan &raquo;</a>
+                        <a class="btn btn-futsal btn-block" href="{% url 'fields' %}" role="button">Telusuri Lapangan &raquo;</a>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                         </div>
                         <h5 class="card-title">Login atau Daftar</h5>
                         <p class="card-text">Masuk ke akun Anda untuk booking atau daftar jika Anda pengguna baru.</p>
-                        <a class="btn btn-status btn-block" href="login.php" role="button">Masuk / Daftar &raquo;</a>
+                        <a class="btn btn-status btn-block" href="{% url 'login' %}" role="button">Masuk / Daftar &raquo;</a>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                         </div>
                         <h5 class="card-title">Pilihan Peralatan</h5>
                         <p class="card-text">Lihat katalog peralatan pendukung yang bisa Anda sewa bersamaan dengan lapangan.</p>
-                        <a class="btn btn-equipment btn-block" href="peralatan_user.php" role="button">Lihat Peralatan &raquo;</a>
+                        <a class="btn btn-equipment btn-block" href="{% url 'accessories' %}" role="button">Lihat Peralatan &raquo;</a>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
               </div>
               <h3 class="font-weight-bold mt-3 mb-3">1. MASUK / DAFTAR</h3>
               <p class="text-muted px-3">Masuk jika sudah punya akun, atau daftar baru untuk mengakses semua fitur penyewaan kami.</p>
-              <p><a class="btn btn-success mt-2 font-weight-bold" href="login.php" role="button">Masuk / Daftar &raquo;</a></p>
+              <p><a class="btn btn-success mt-2 font-weight-bold" href="{% url 'login' %}" role="button">Masuk / Daftar &raquo;</a></p>
             </div>
         </div>
         <div class="col-md-4 mb-4">

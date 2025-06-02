@@ -10,7 +10,7 @@
 <main role="main">
 <div class="jumbotron jumbotron-user-home">
   <div class="container text-center">
-    <h1 class="display-4">Selamat Datang, {{ user.username }}!</h1>
+    <h1 class="display-4">Selamat Datang, {{ user.Nama }}!</h1>
     <p class="lead">Platform kami mudahkan Anda sewa lapangan olahraga pilihan. Cari jadwal tersedia, pesan online praktis, lalu dapatkan konfirmasi booking instan.</p>
     <p><a class="btn btn-primary btn-lg mt-2" href="#pilihan-lanjutan-user" role="button">Mulai Sekarang &raquo;</a></p>
   </div>
@@ -33,7 +33,7 @@
                         </div>
                         <h5 class="card-title">Sewa Lapangan</h5>
                         <p class="card-text">Temukan dan pesan lapangan futsal atau olahraga lainnya dengan mudah dan cepat.</p>
-                        <a class="btn btn-futsal btn-block" href="booking.php" role="button">Pesan Lapangan &raquo;</a>
+                        <a class="btn btn-futsal btn-block" href="{% url 'user_home' %}" role="button">Pesan Lapangan &raquo;</a>
                     </div>
                 </div>
             </div>
