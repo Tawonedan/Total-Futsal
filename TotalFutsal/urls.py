@@ -26,11 +26,11 @@ from accounts import views as account_views
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("administrator/", admin.site.urls),
     path("", include("pages.urls")),
     path("projects/", include("projects.urls")),
     path('', include('accounts.urls')),
-    # path('admin/', include('administration.urls')),
+    path('admin/', include('administration.urls')),
     path('register/', account_views.register, name='register'),
 
 
