@@ -89,7 +89,6 @@ class Lapangan(models.Model):
   Jenis = models.CharField(max_length=255)
   Harga = models.IntegerField()
   status = models.IntegerField(default=1)
-  # Ubah ke ImageField dan direktori lebih spesifik
   gambar = models.FileField(upload_to='lapangan_images/', blank=True, null=True)
 
 

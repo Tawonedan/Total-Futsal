@@ -123,7 +123,44 @@ class UserHistoryView(LoginRequiredMixin, View):
     template_name = 'accounts/history.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user = request.user
+        tanggal_filter = request.GET.get('tanggal')
+
+        if tanggal_filter:
+            pesanan_list = Pesanan.objects.filter(id_user=user, Tanggal=tanggal_filter).select_related('ID_lapangan', 'id_jadwal')
+        else:
+            pesanan_list = Pesanan.objects.filter(id_user=user).select_related('ID_lapangan', 'id_jadwal')
+
+        context = {
+            'pesanan_list': pesanan_list,
+            'tanggal_filter': tanggal_filter,
+        }
+        return render(request, self.template_name, context)
+    
+class UserHistoryDetailView(LoginRequiredMixin, View):
+    template_name = 'accounts/history_detail.html'
+
+    def get(self, request, id):
+        pesanan = get_object_or_404(
+            Pesanan.objects.select_related('ID_lapangan', 'id_jadwal'),
+            pk=id,
+            id_user=request.user  
+        )
+
+        tambahan_items = PesananTambahan.objects.filter(pesanan=pesanan).select_related('item')
+
+        subtotal_lapangan = pesanan.ID_lapangan.Harga
+        total_tambahan = sum([item.jumlah * item.item.Harga for item in tambahan_items])
+        total = subtotal_lapangan + total_tambahan
+
+        context = {
+            'pesanan': pesanan,
+            'tambahan_items': tambahan_items,
+            'subtotal_lapangan': subtotal_lapangan,
+            'total_tambahan': total_tambahan,
+            'total': total,
+        }
+        return render(request, self.template_name, context)
 
 
 class CustomLogoutView(LoginRequiredMixin, LogoutView):

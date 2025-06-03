@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block page_content %}
+
+{% include 'accounts/navbar.html' %}
+
+
+<main role="main" class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9"> 
+            <div class="detail-card">
+                <div class="detail-card-header">
+                    Rincian Pesanan #{{ pesanan.ID }}
+                </div>
+                <div class="detail-card-body">
+
+                    <div class="row">
+                        <div class="col-md-5 mb-4 mb-md-0">
+                            <div class="field-image-detail-container">
+                                <img src="{{ pesanan.ID_lapangan.foto.url|default:'/media/project_images/data_lapangan.jpg' }}" alt="Gambar {{ pesanan.ID_lapangan.Nama }}" class="field-image-detail">
+                                <h4 class="field-name-detail mt-2">{{ pesanan.ID_lapangan.Nama }}</h4>
+                                <p class="text-muted small">
+                                    Harga Lapangan: {{ pesanan.ID_lapangan.Harga }} / Sesi (2 Jam)
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="info-group">
+                                <h5>Data Pemesan</h5>
+                                <dl>
+                                    <div class="info-item">
+                                        <dt>Nama</dt>
+                                        <dd>{{ user.Nama }}</dd>
+                                    </div>
+                                    <div class="info-item">
+                                        <dt>No. Telepon</dt>
+                                        <dd>{{ pesanan.Telepon }}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+
+                            <div class="info-group">
+                                <h5>Detail Jadwal Sewa</h5>
+                                <dl>
+                                    <div class="info-item">
+                                        <dt>Tanggal Main</dt>
+                                        <dd>{{ pesanan.Tanggal }}</dd>
+                                    </div>
+                                    <div class="info-item">
+                                        <dt>Sesi Waktu</dt>
+                                        <dd>
+                                            {{ pesanan.id_jadwal.Jadwal }}
+                                        </dd>
+                                    </div>
+                                    <div class="info-item">
+                                        <dt>Durasi</dt>
+                                        <dd>2 Jam</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="info-group">
+                        <h5 class="section-title-admin">Item Tambahan Dipesan</h5>
+                        {% if tambahan_items %}
+                        <dl>
+                            {% for item in tambahan_items %}
+                            <div class="info-item">
+                                <dt>{{ item.item.Nama }} X {{ item.jumlah }}</dt>
+                                <dd>Rp {{ item.item.Harga|floatformat:0|intcomma }}</dd>
+                            </div>
+                            {% endfor %}
+                        </dl>
+                            {% else %}
+                            <p><i>Tidak ada item tambahan.</i></p>
+                            {% endif %}
+                        </div>
+                        <hr>
+
+
+                    <div class="info-group payment-summary">
+                        <h5 class="section-title-admin">Rincian Pembayaran</h5>
+                        <dl>
+                             <div class="info-item">
+                                <dt>Subtotal Lapangan</dt>
+                                <dd>{{ subtotal_lapangan|intcomma }}</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt>Subtotal Tambahan</dt>
+                                <dd>{{ total_tambahan|intcomma }}</dd>
+                            </div>
+                            <hr style="border-top: 1px dashed #ccc; margin: 0.5rem 0; width:100%;">
+                            <div class="info-item total-amount">
+                                <dt>Total Pembayaran</dt>
+                                <dd><strong>Rp {{ total|intcomma }}</strong></dd>
+                            </div>
+                            <div class="info-item">
+                                <dt>Jumlah Dibayar</dt>
+                                <dd>Rp {{ pesanan.bayar|intcomma }}</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt>Kembalian</dt>
+                                <dd>Rp {{ pesanan.kembali|intcomma }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <hr>
+                     <div class="info-group">
+                        <h5 class="section-title-admin">Status</h5>
+                         <dl>
+                            <div class="info-item">
+                                <dt>Status Pesanan:</dt>
+                                <dd><span class="badge badge-<?php echo $status_info_pesanan['badge']; ?> status-badge"><?php echo htmlspecialchars($status_info_pesanan['text']); ?></span></dd>
+                            </div>
+                            <div class="info-item">
+                                <dt>Status Pembayaran:</dt>
+                                <dd><span class="badge badge-<?php echo (strtolower($status_pembayaran_display) == 'lunas') ? 'success' : 'warning'; ?> status-badge"><?php echo htmlspecialchars($status_pembayaran_display); ?></span></dd>
+                            </div>
+                            <?php if (isset($booking['Tanggal_Pemesanan_Dibuat']) && !empty($booking['Tanggal_Pemesanan_Dibuat']) && $booking['Tanggal_Pemesanan_Dibuat'] != '0000-00-00 00:00:00'): ?>
+                            <div class="info-item mt-2">
+                                <dt>Dipesan pada:</dt>
+                                <dd class="text-muted"><small><?php echo htmlspecialchars(date('d M Y, H:i', strtotime($booking['Tanggal_Pemesanan_Dibuat']))); ?> WIB</small></dd>
+                            </div>
+                            <?php endif; ?>
+                        </dl>
+                    </div>
+                </div>
+                <div class="card-footer footer-actions">
+                    <a href="history.php" class="btn btn-outline-secondary mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle-fill mr-1" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/></svg>
+                        Kembali ke Riwayat
+                    </a>
+                    <button class="btn btn-primary" onclick="window.print();">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill mr-1" viewBox="0 0 16 16"><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zm4 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/><path d="M11 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM1.5 7a.5.5 0 0 0-.5.5V11a.5.5 0 0 0 .5.5H2v-4H1.5zM14.5 7a.5.5 0 0 0-.5.5V11a.5.5 0 0 0 .5.5H15V7h-.5z"/></svg>
+                        Cetak Bukti Pesanan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include 'pages/footer.html' %}
+
+<script>
+    window.setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert-container .alert');
+        alerts.forEach(function(alert) {
+            $(alert).fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        });
+    }, 5000);
+</script>
+
+    <style>
+        body { background-color: #f8f9fa; padding-top: 70px; }
+        .navbar-brand-custom { font-weight: bold; }
+        .detail-card { background-color: #fff; border-radius: .75rem; box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.08); margin-top: 2rem; overflow: hidden; }
+        .detail-card-header { background-color: #007bff; color: white; font-size: 1.3rem; font-weight: bold; padding: 1rem 1.5rem; border-top-left-radius: .75rem; border-top-right-radius: .75rem; }
+        .detail-card-body { padding: 2rem; }
+        .field-image-detail-container { text-align: center; margin-bottom:1.5rem; }
+        .field-image-detail { width: 100%; max-height: 300px; object-fit: cover; border-radius: .5rem; border: 1px solid #dee2e6; margin-bottom: 1rem; }
+        .field-name-detail { font-size: 1.5rem; font-weight: bold; color: #343a40; margin-top:0.5rem; }
+        .info-group { margin-bottom: 1.5rem; }
+        .info-group h5 { font-weight: bold; color: #495057; margin-bottom: .75rem; padding-bottom: .5rem; border-bottom: 2px solid #007bff; display: inline-block; }
+        .info-item { display: flex; justify-content: space-between; padding: .6rem 0; font-size: 1rem; border-bottom: 1px solid #f1f1f1; }
+        .info-item:last-child { border-bottom: none; }
+        .info-item dt { font-weight: 600; color: #495057; flex-basis: 45%; margin-right: 10px; word-break: break-word;}
+        .info-item dd { margin-bottom: 0; color: #212529; text-align: right; flex-basis: 55%; word-break: break-word;}
+        .payment-summary .info-item dt, .payment-summary .info-item dd { font-size: 1.05rem; }
+        .payment-summary .total-amount strong { font-size: 1.25rem; color: #28a745; }
+        .status-badge { font-size: .9rem; padding: .4em .7em; }
+        .footer-actions { padding: 1.5rem; text-align: right; background-color: #f8f9fa; border-top: 1px solid #dee2e6;}
+        .alert-container { margin-bottom: 1.5rem; }
+    </style>
+
+{% endblock page_content %}

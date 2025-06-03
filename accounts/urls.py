@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CustomLogoutView, UserHomeView, UserBookView, UserBookDetailView, UserBookCreateView, UserProfileView, UserProfileEditView, UserAboutView, UserContactView, UserHistoryView
+from .views import CustomLogoutView, UserHomeView, UserBookView, UserBookDetailView, UserBookCreateView, UserProfileView, UserProfileEditView, UserAboutView, UserContactView, UserHistoryView, UserHistoryDetailView
 
 urlpatterns = [
     path('home/', UserHomeView.as_view(), name='user_home'),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('booking/<int:id>/', UserBookDetailView.as_view(), name='user_book_detail'),
     path('booking/submit/', UserBookCreateView.as_view(), name='user_book_process'),
     path('history/', UserHistoryView.as_view(), name='user_history'),
+    path('history/<int:id>/', UserHistoryDetailView.as_view(), name='user_history_detail'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
 
 
