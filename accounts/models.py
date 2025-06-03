@@ -1,16 +1,14 @@
-# futsal_booking/models.py
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-# Custom User Manager untuk model Pengguna
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(password) # Penting untuk hashing password
+        user.set_password(password) 
         user.save(using=self._db)
         return user
 
@@ -28,19 +26,19 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-# Model Pengguna sebagai model User utama
+
 class Pengguna(AbstractBaseUser, PermissionsMixin):
     ID = models.AutoField(primary_key=True)
     Nama = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
-    # HAPUS BARIS INI: Password = models.CharField(max_length=20)
+
     Level = models.CharField(max_length=5, default='user')
 
     Alamat = models.TextField(blank=True, null=True)
     Telepon = models.CharField(max_length=20, blank=True, null=True)
     NIP = models.CharField(max_length=50, unique=True, blank=True, null=True)
 
-    # Ubah ke ImageField dan direktori lebih spesifik
+
     gambar = models.FileField(upload_to='user_images/', blank=True, null=True)
 
 
@@ -65,9 +63,6 @@ class Pengguna(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         return self.Level == 'admin' or self.is_superuser
 
-# ====================================================================
-# Models lainnya (sesuai skema SQL Anda)
-# ====================================================================
 
 class Jadwal(models.Model):
   id_jadwal = models.AutoField(primary_key=True)
@@ -103,7 +98,6 @@ class Tambahan(models.Model):
   ID = models.AutoField(primary_key=True)
   Nama = models.CharField(max_length=255)
   Harga = models.IntegerField()
-  # Ini sudah bagus, biarkan
   gambar = models.FileField(upload_to='tambahan_images/', blank=True, null=True)
 
 

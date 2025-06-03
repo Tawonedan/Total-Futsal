@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load humanize %} 
 
 {% block page_content %}
 
@@ -15,21 +15,6 @@
         <p class="lead">Pantau semua transaksi & nilai total pendapatan dari penyewaan lapangan.</p>
     </div>
 
-     <div class="alert-container">
-        <?php
-        if (isset($_SESSION['success_message'])) {
-            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' .
-                 htmlspecialchars($_SESSION['success_message']) .
-                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-            unset($_SESSION['success_message']);
-        }
-        if (isset($_SESSION['error_message'])) {
-            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' .
-                 htmlspecialchars($_SESSION['error_message']) .
-                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-            unset($_SESSION['error_message']);
-        }
-        ?>
     </div>
 
     <div class="row mb-4">
@@ -37,7 +22,7 @@
             <div class="card summary-card">
                 <div class="card-body">
                     <h6 class="card-title">Pendapatan Selesai (Bulan Ini)</h6>
-                    <p class="display-5"><?php echo format_rupiah_laporan($total_pendapatan_bulan_ini); ?></p>
+                    <p class="display-5">Rp {{ total_pendapatan_bulan_ini|intcomma }}</p>
                 </div>
             </div>
         </div>
@@ -45,7 +30,7 @@
             <div class="card summary-card">
                 <div class="card-body">
                     <h6 class="card-title">Booking Selesai (Bulan Ini)</h6>
-                    <p class="display-5"><?php echo $jumlah_transaksi_bulan_ini; ?></p>
+                    <p class="display-5">{{ jumlah_transaksi_bulan_ini }}</p>
                 </div>
             </div>
         </div>
@@ -53,7 +38,7 @@
              <div class="card summary-card">
                 <div class="card-body">
                     <h6 class="card-title">Total Pendapatan Selesai (Semua)</h6>
-                    <p class="display-5"><?php echo format_rupiah_laporan($total_pendapatan_keseluruhan); ?></p>
+                    <p class="display-5">Rp {{ total_pendapatan_keseluruhan|intcomma }}</p>
                 </div>
             </div>
         </div>
@@ -64,47 +49,41 @@
             <h5 class="mb-0">Filter Laporan Transaksi</h5>
         </div>
         <div class="card-body">
-            <form action="laporan_keuangan.php" method="POST" id="filter-laporan-form">
+            <form method="GET" id="filter-laporan-form"> {# Method GET untuk filter biasanya lebih baik #}
                 <div class="row">
                     <div class="col-md-3 form-group">
                         <label for="tanggal-mulai">Tgl Main Mulai</label>
-                        <input type="date" class="form-control form-control-sm" id="tanggal-mulai" name="tanggal_mulai" value="<?php echo htmlspecialchars($filter_values['tanggal_mulai']); ?>">
+                        <input type="date" class="form-control form-control-sm" id="tanggal-mulai" name="tanggal_mulai" value="{{ filter_values.tanggal_mulai }}">
                     </div>
                     <div class="col-md-3 form-group">
                         <label for="tanggal-akhir">Tgl Main Akhir</label>
-                        <input type="date" class="form-control form-control-sm" id="tanggal-akhir" name="tanggal_akhir" value="<?php echo htmlspecialchars($filter_values['tanggal_akhir']); ?>">
+                        <input type="date" class="form-control form-control-sm" id="tanggal-akhir" name="tanggal_akhir" value="{{ filter_values.tanggal_akhir }}">
                     </div>
                     <div class="col-md-3 form-group">
                         <label for="filter-lapangan">Lapangan</label>
                         <select class="form-control form-control-sm" id="filter-lapangan" name="filter_lapangan">
                             <option value="">Semua Lapangan</option>
-                            <?php 
-                            if($result_lapangan_options && mysqli_num_rows($result_lapangan_options) > 0){
-                                mysqli_data_seek($result_lapangan_options, 0); // Reset pointer
-                                while($lap_opt = mysqli_fetch_assoc($result_lapangan_options)){
-                                    $selected = ($filter_values['lapangan'] == $lap_opt['ID']) ? 'selected' : '';
-                                    echo "<option value='".htmlspecialchars($lap_opt['ID'])."' $selected>".htmlspecialchars($lap_opt['Nama'])."</option>";
-                                }
-                            }
-                            ?>
+                            {% for lap_opt in lapangan_options %}
+                                <option value="{{ lap_opt.ID }}" {% if filter_values.lapangan == lap_opt.ID|stringformat:"s" %}selected{% endif %}>{{ lap_opt.Nama }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                      <div class="col-md-3 form-group">
                         <label for="filter-status-pesanan">Status Pesanan</label>
                         <select class="form-control form-control-sm" id="filter-status-pesanan" name="filter_status_pesanan">
                             <option value="">Semua Status Pesanan</option>
-                            <option value="0" <?php echo (isset($filter_values['status_pesanan']) && $filter_values['status_pesanan'] === "0") ? 'selected' : ''; ?>>Selesai</option>
-                            <option value="1" <?php echo (isset($filter_values['status_pesanan']) && $filter_values['status_pesanan'] === "1") ? 'selected' : ''; ?>>Berlangsung</option>
-                            <option value="2" <?php echo (isset($filter_values['status_pesanan']) && $filter_values['status_pesanan'] === "2") ? 'selected' : ''; ?>>Dibatalkan</option>
+                            <option value="0" {% if filter_values.status_pesanan == "0" %}selected{% endif %}>Selesai</option>
+                            <option value="1" {% if filter_values.status_pesanan == "1" %}selected{% endif %}>Berlangsung</option>
+                            <option value="2" {% if filter_values.status_pesanan == "2" %}selected{% endif %}>Dibatalkan</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 text-right mt-2">
-                        <button type="submit" name="apply_filter_laporan" class="btn btn-primary btn-sm">Terapkan Filter</button>
-                        <?php if (!empty($filter_values['tanggal_mulai']) || !empty($filter_values['tanggal_akhir']) || !empty($filter_values['lapangan']) || (isset($filter_values['status_pesanan']) && $filter_values['status_pesanan'] !== '')): ?>
-                            <a href="laporan_keuangan.php" class="btn btn-outline-secondary btn-sm">Reset Filter</a>
-                        <?php endif; ?>
+                        <button type="submit" class="btn btn-primary btn-sm">Terapkan Filter</button>
+                        {% if filter_values.tanggal_mulai or filter_values.tanggal_akhir or filter_values.lapangan or filter_values.status_pesanan %}
+                            <a href="{% url 'admin_report' %}" class="btn btn-outline-secondary btn-sm">Reset Filter</a>
+                        {% endif %}
                     </div>
                 </div>
             </form>
@@ -113,7 +92,8 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Detail Transaksi Keuangan (<?php echo mysqli_num_rows($result_transaksi); ?> ditemukan)</h5>
+            <h5 class="mb-0">Detail Transaksi Keuangan ({{ transaksi_list.count }} ditemukan)</h5>
+            {# Tombol Export bisa diarahkan ke view Django lain yang menghasilkan CSV/Excel #}
             <button class="btn btn-outline-success btn-sm" id="export-laporan" onclick="alert('Fitur export laporan belum diimplementasikan.');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download mr-1" viewBox="0 0 16 16">
                   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
@@ -138,41 +118,44 @@
                         </tr>
                     </thead>
                     <tbody id="tabel-transaksi-body">
-                        <?php if (mysqli_num_rows($result_transaksi) > 0) : ?>
-                            <?php while ($trx = mysqli_fetch_assoc($result_transaksi)) : 
-                                $status_pembayaran_info = get_payment_status_from_booking_status($trx['StatusPesananDB']);
-                            ?>
+                        {% if transaksi_list %}
+                            {% for trx in transaksi_list %}
                             <tr>
-                                <td>#<?php echo htmlspecialchars($trx['IDTransaksi']); ?></td>
-                                <td><?php echo htmlspecialchars(date('d M Y', strtotime($trx['Tanggal']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('H:i', strtotime($trx['Jam']))); ?> WIB</td>
-                                <td><?php echo htmlspecialchars($trx['NamaPenyewa'] ?? 'N/A'); ?></td>
-                                <td><?php echo htmlspecialchars($trx['NamaLapangan'] ?? 'N/A'); ?></td>
-                                <td class="text-center"><?php echo htmlspecialchars($trx['durasi']); ?> Jam</td>
-                                <td class="text-right"><?php echo format_rupiah_laporan($trx['total_harga']); ?></td>
-                                <td class="text-center"><span class="badge badge-<?php echo $status_pembayaran_info['badge']; ?>"><?php echo htmlspecialchars($status_pembayaran_info['text']); ?></span></td>
+                                <td>#{{ trx.ID }}</td>
+                                <td>{{ trx.Tanggal|date:"d M Y" }}</td>
+                                <td>{{ trx.Jam|time:"H:i" }} WIB</td>
+                                <td>{{ trx.id_user.Nama|default:"N/A" }}</td>
+                                <td>{{ trx.ID_lapangan.Nama|default:"N/A" }}</td>
+                                <td class="text-center">{{ trx.durasi }} Jam</td>
+                                <td class="text-right">Rp {{ trx.total_harga|intcomma }}</td>
+                                <td class="text-center">
+                                    {% if trx.status == 0 %} {# Selesai #}
+                                        <span class="badge badge-success">Lunas</span>
+                                    {% elif trx.status == 1 %} {# Berlangsung #}
+                                        <span class="badge badge-warning">Belum Lunas</span>
+                                     {% elif trx.status == 2 %} {# Dibatalkan #}
+                                        <span class="badge badge-danger">Dibatalkan</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">Tidak Diketahui</span>
+                                    {% endif %}
+                                </td>
                             </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
+                            {% endfor %}
+                        {% else %}
                             <tr><td colspan="8" class="text-center text-muted p-4">Tidak ada data transaksi keuangan yang sesuai dengan filter.</td></tr>
-                        <?php endif; ?>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
         </div>
-        <?php if (mysqli_num_rows($result_transaksi) > 0): ?>
+        {% if transaksi_list %}
         <div class="card-footer bg-light">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#">Sebelumnya</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Selanjutnya</a></li>
-                </ul>
-            </nav>
+            {# Implementasi Paginasi Django jika diperlukan #}
         </div>
-        <?php endif; ?>
+        {% endif %}
     </div>
 </main>
+
 
 
 
