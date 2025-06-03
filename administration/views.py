@@ -138,7 +138,46 @@ class AdminHistoryView(LoginRequiredMixin, View):
     template_name = 'administration/admin_riwayat.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        context = {}
+
+        # Asumsi status: 0=Selesai, 1=Berlangsung, 2=Dibatalkan
+        total_booking_selesai = Pesanan.objects.filter(status=0).count()
+        context['total_booking_selesai'] = total_booking_selesai
+
+        total_booking_dibatalkan = Pesanan.objects.filter(status=2).count()
+        context['total_booking_dibatalkan'] = total_booking_dibatalkan
+        
+        total_pendapatan_dari_selesai = Pesanan.objects.filter(status=0).aggregate(total=Sum('total_harga'))['total'] or 0
+        context['total_pendapatan_dari_selesai'] = total_pendapatan_dari_selesai
+
+        # Filter
+        filter_tanggal_mulai_str = request.GET.get('tanggal_mulai')
+        filter_tanggal_akhir_str = request.GET.get('tanggal_akhir')
+        filter_lapangan_id = request.GET.get('filter_lapangan')
+        filter_status_str = request.GET.get('filter_status')
+
+        pesanan_list = Pesanan.objects.all().select_related('id_user', 'ID_lapangan', 'id_jadwal').order_by('-Tanggal', '-Jam')
+
+        if filter_tanggal_mulai_str:
+            pesanan_list = pesanan_list.filter(Tanggal__gte=datetime.strptime(filter_tanggal_mulai_str, '%Y-%m-%d').date())
+        if filter_tanggal_akhir_str:
+            pesanan_list = pesanan_list.filter(Tanggal__lte=datetime.strptime(filter_tanggal_akhir_str, '%Y-%m-%d').date())
+        if filter_lapangan_id:
+            pesanan_list = pesanan_list.filter(ID_lapangan_id=filter_lapangan_id)
+        if filter_status_str != '' and filter_status_str is not None:
+            pesanan_list = pesanan_list.filter(status=filter_status_str)
+            
+        context['pesanan_list'] = pesanan_list
+        context['lapangan_options'] = Lapangan.objects.all()
+        
+        context['filter_values'] = {
+            'tanggal_mulai': filter_tanggal_mulai_str or '',
+            'tanggal_akhir': filter_tanggal_akhir_str or '',
+            'lapangan': filter_lapangan_id or '',
+            'status_booking': filter_status_str if filter_status_str is not None else '',
+        }
+        
+        return render(request, self.template_name, context)
 
 class AdminHistoryDetailView(LoginRequiredMixin, View):
     template_name = 'administration/admin_riwayat_detail.html'

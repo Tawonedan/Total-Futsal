@@ -52,7 +52,7 @@
                                 {% if lapangan.gambar %}
                                     <img src="{{ lapangan.gambar.url }}" alt="{{ lapangan.Nama }}" class="lapangan-foto-thumb">
                                 {% else %}
-                                    <img src="{% static 'path/to/default/image.png' %}" alt="No Image" class="lapangan-foto-thumb"> {# Ganti dengan path gambar default jika ada #}
+                                    <img src="{{ lapangan.foto.url|default:'/media/project_images/data_lapangan.jpg' }}" alt="No Image" class="lapangan-foto-thumb"> {# Ganti dengan path gambar default jika ada #}
                                 {% endif %}
                             </td>
                             <td>{{ lapangan.Nama }}</td>

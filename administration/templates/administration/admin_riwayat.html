@@ -1,9 +1,7 @@
 {% extends "base.html" %}
-
+{% load humanize %}
 
 {% block page_content %}
-
-
 <div class="container">
     {% include 'administration/navbar.html' %}
 </div>
@@ -14,12 +12,14 @@
         <p class="lead">Tinjau dan analisis seluruh transaksi booking yang telah terjadi.</p>
     </div>
 
+    {# Alert messages #}
+
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card summary-card">
                 <div class="card-body">
                     <h6 class="card-title">Total Booking Selesai</h6>
-                    <p class="display-5"><?php echo $total_booking_selesai; ?></p>
+                    <p class="display-5">{{ total_booking_selesai }}</p>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
             <div class="card summary-card">
                 <div class="card-body">
                     <h6 class="card-title">Total Booking Dibatalkan</h6>
-                    <p class="display-5"><?php echo $total_booking_dibatalkan; ?></p>
+                    <p class="display-5">{{ total_booking_dibatalkan }}</p>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
              <div class="card summary-card">
                 <div class="card-body">
                     <h6 class="card-title">Total Pendapatan (dari Selesai)</h6>
-                    <p class="display-5"><?php echo format_rupiah_admin_hist($total_pendapatan_dari_selesai); ?></p>
+                    <p class="display-5">Rp {{ total_pendapatan_dari_selesai|intcomma }}</p>
                 </div>
             </div>
         </div>
@@ -46,58 +46,52 @@
             <h5 class="mb-0">Filter Riwayat Booking</h5>
         </div>
         <div class="card-body">
-            <form action="riwayat_booking.php" method="POST" id="filter-riwayat-form">
+            <form method="GET" id="filter-riwayat-form">
                 <div class="row">
                     <div class="col-md-3 form-group">
                         <label for="tanggal-mulai">Tanggal Main Mulai</label>
-                        <input type="date" class="form-control form-control-sm" id="tanggal-mulai" name="tanggal_mulai" value="<?php echo htmlspecialchars($filter_values['tanggal_mulai']); ?>">
+                        <input type="date" class="form-control form-control-sm" id="tanggal-mulai" name="tanggal_mulai" value="{{ filter_values.tanggal_mulai }}">
                     </div>
                     <div class="col-md-3 form-group">
                         <label for="tanggal-akhir">Tanggal Main Akhir</label>
-                        <input type="date" class="form-control form-control-sm" id="tanggal-akhir" name="tanggal_akhir" value="<?php echo htmlspecialchars($filter_values['tanggal_akhir']); ?>">
+                        <input type="date" class="form-control form-control-sm" id="tanggal-akhir" name="tanggal_akhir" value="{{ filter_values.tanggal_akhir }}">
                     </div>
                     <div class="col-md-2 form-group">
                         <label for="filter-lapangan">Lapangan</label>
                         <select class="form-control form-control-sm" id="filter-lapangan" name="filter_lapangan">
                             <option value="">Semua</option>
-                            <?php 
-                            if($result_lapangan_options && mysqli_num_rows($result_lapangan_options) > 0){
-                                mysqli_data_seek($result_lapangan_options, 0); 
-                                while($lap_opt = mysqli_fetch_assoc($result_lapangan_options)){
-                                    $selected = ($filter_values['lapangan'] == $lap_opt['ID']) ? 'selected' : '';
-                                    echo "<option value='".htmlspecialchars($lap_opt['ID'])."' $selected>".htmlspecialchars($lap_opt['Nama'])."</option>";
-                                }
-                            }
-                            ?>
+                            {% for lap_opt in lapangan_options %}
+                                <option value="{{ lap_opt.ID }}" {% if filter_values.lapangan == lap_opt.ID|stringformat:"s" %}selected{% endif %}>{{ lap_opt.Nama }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                      <div class="col-md-2 form-group">
                         <label for="filter-status">Status Booking</label>
                         <select class="form-control form-control-sm" id="filter-status" name="filter_status">
                             <option value="">Semua</option>
-                            <option value="0" <?php echo ($filter_values['status_booking'] === "0") ? 'selected' : ''; ?>>Selesai</option>
-                            <option value="1" <?php echo ($filter_values['status_booking'] === "1") ? 'selected' : ''; ?>>Berlangsung</option>
-                            <option value="2" <?php echo ($filter_values['status_booking'] === "2") ? 'selected' : ''; ?>>Dibatalkan</option>
+                            <option value="0" {% if filter_values.status_booking == "0" %}selected{% endif %}>Selesai</option>
+                            <option value="1" {% if filter_values.status_booking == "1" %}selected{% endif %}>Berlangsung</option>
+                            <option value="2" {% if filter_values.status_booking == "2" %}selected{% endif %}>Dibatalkan</option>
                         </select>
                     </div>
                     <div class="col-md-2 form-group d-flex align-items-end">
-                        <button type="submit" name="apply_filter" class="btn btn-primary btn-block btn-sm">Terapkan</button>
+                        <button type="submit" class="btn btn-primary btn-block btn-sm">Terapkan</button>
                     </div>
                 </div>
-                 <?php if (!empty($filter_values['tanggal_mulai']) || !empty($filter_values['tanggal_akhir']) || !empty($filter_values['lapangan']) || (isset($filter_values['status_booking']) && $filter_values['status_booking'] !== "")): ?>
+                 {% if filter_values.tanggal_mulai or filter_values.tanggal_akhir or filter_values.lapangan or filter_values.status_booking %}
                     <div class="row mt-2">
                         <div class="col-12 text-md-right">
-                            <a href="riwayat_booking.php" class="btn btn-outline-secondary btn-sm">Reset Filter</a>
+                            <a href="{% url 'admin_history' %}" class="btn btn-outline-secondary btn-sm">Reset Filter</a>
                         </div>
                     </div>
-                <?php endif; ?>
+                {% endif %}
             </form>
         </div>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Daftar Semua Booking (<?php echo mysqli_num_rows($result_history); ?> ditemukan)</h5>
+            <h5 class="mb-0">Daftar Semua Booking ({{ pesanan_list.count }} ditemukan)</h5>
             <button class="btn btn-outline-secondary btn-sm" id="export-riwayat" onclick="alert('Fitur export belum diimplementasikan.');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill mr-1" viewBox="0 0 16 16">
                   <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zm4 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
@@ -123,78 +117,45 @@
                         </tr>
                     </thead>
                     <tbody id="tabel-riwayat-body">
-                        <?php if (mysqli_num_rows($result_history) > 0) : ?>
-                            <?php while ($booking_row = mysqli_fetch_assoc($result_history)) : 
-                                $status_item_admin = get_status_pesanan_admin_text($booking_row['StatusPesanan']);
-                            ?>
+                        {% if pesanan_list %}
+                            {% for booking_row in pesanan_list %}
                             <tr>
-                                <td>#<?php echo htmlspecialchars($booking_row['BookingID']); ?></td>
-                                <td><?php echo htmlspecialchars(date('d M Y', strtotime($booking_row['TanggalMain']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('H:i', strtotime($booking_row['JamMain']))); ?> WIB</td>
-                                <td><?php echo htmlspecialchars($booking_row['NamaUser'] ?? 'N/A'); ?></td>
-                                <td><?php echo htmlspecialchars($booking_row['NamaLapangan'] ?? ($booking_row['Nama'] ?? 'N/A')); ?></td>
-                                <td class="text-center"><?php echo htmlspecialchars($booking_row['durasi']); ?> Jam</td>
-                                <td class="text-right"><?php echo format_rupiah_admin_hist($booking_row['total_harga']); ?></td>
-                                <td class="text-center"><span class="badge badge-<?php echo $status_item_admin['badge']; ?> status-badge"><?php echo htmlspecialchars($status_item_admin['text']); ?></span></td>
+                                <td>#{{ booking_row.ID }}</td>
+                                <td>{{ booking_row.Tanggal|date:"d M Y" }}</td>
+                                <td>{{ booking_row.Jam|time:"H:i" }} WIB</td>
+                                <td>{{ booking_row.id_user.Nama|default:"N/A" }}</td>
+                                <td>{{ booking_row.ID_lapangan.Nama|default:"N/A" }}</td>
+                                <td class="text-center">{{ booking_row.durasi }} Jam</td>
+                                <td class="text-right">Rp {{ booking_row.total_harga|intcomma }}</td>
+                                <td class="text-center">
+                                    {% if booking_row.status == 0 %} <span class="badge badge-primary status-badge">Selesai</span>
+                                    {% elif booking_row.status == 1 %} <span class="badge badge-success status-badge">Berlangsung</span>
+                                    {% elif booking_row.status == 2 %} <span class="badge badge-danger status-badge">Dibatalkan</span>
+                                    {% else %} <span class="badge badge-secondary status-badge">Tidak Diketahui</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-center action-buttons">
-                                    <!-- <a href="admin_book_detail_view.php?ID_book=<?php echo $booking_row['BookingID']; ?>" class="btn btn-sm btn-info" title="Lihat Detail & Kelola"> -->
-                                    <a href="{% url 'admin_history_detail' %}" class="btn btn-sm btn-info" title="Lihat Detail & Kelola">
+                                    <a href="{% url 'admin_history_detail' %}" {# Ganti dengan PK: {% url 'admin_history_detail' pk=booking_row.ID %} setelah URL diupdate #}
+                                       class="btn btn-sm btn-info" title="Lihat Detail & Kelola">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg> Detail
                                     </a>
                                 </td>
                             </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr><td colspan="9" class="text-center text-muted p-4">Tidak ada data riwayat booking yang ditemukan<?php echo (!empty($filter_values['tanggal_mulai']) || !empty($filter_values['tanggal_akhir']) || !empty($filter_values['lapangan']) || (isset($filter_values['status_booking']) && $filter_values['status_booking'] !== "")) ? ' untuk filter yang diterapkan' : ''; ?>.</td></tr>
-                        <?php endif; ?>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="9" class="text-center text-muted p-4">Tidak ada data riwayat booking yang ditemukan.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
         </div>
-        <?php if (mysqli_num_rows($result_history) > 0): ?>
+        {% if pesanan_list %}
         <div class="card-footer bg-light">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#">Sebelumnya</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Selanjutnya</a></li>
-                </ul>
-            </nav>
+            {# Implementasi Paginasi Django jika diperlukan #}
         </div>
-        <?php endif; ?>
+        {% endif %}
     </div>
 </main>
 
-{% include 'administration/footer.html' %}
 
-<script src="./js/jquery-3.2.1.slim.min.js"></script>
-<script src="./js/popper.min.js"></script>
-<script src="./js/bootstrap.min.js"></script>
-<script>
-    window.setTimeout(function() {
-        $(".alert").fadeTo(500, 0).slideUp(500, function(){
-            $(this).remove(); 
-        });
-    }, 5000);
-</script>
-
-    <style>
-        body { background-color: #f8f9fa;}
-        .navbar-brand-custom { font-weight: bold; }
-        .page-header { background-color: #6f42c1; color: #fff; padding: 25px 20px; border-radius: .25rem; margin-bottom: 30px; text-align: center; }
-        .page-header h1 { margin-bottom: 0.5rem; }
-        .page-header p { font-size: 1.1rem; color: #e9ecef; }
-        .summary-card { text-align: center; border: none; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); margin-bottom: 1.5rem; }
-        .summary-card .card-body { padding: 1.5rem; }
-        .summary-card .card-title { font-size: 1rem; color: #6c757d; margin-bottom: 0.5rem; }
-        .summary-card .display-5 { font-size: 2rem; font-weight: bold; color: #6f42c1; }
-        .filter-card { background-color: #fff; padding: 1.5rem; border-radius: .3rem; margin-bottom: 2rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
-        .table th { background-color: #e9ecef; font-weight:bold; }
-        .table td, .table th { vertical-align: middle; }
-        .action-buttons .btn { margin-right: 5px; margin-bottom: 5px; }
-        .alert-container { position: fixed; top: 80px; right: 20px; z-index: 1050; width: auto; max-width: 400px;}
-    </style>
-
-  {% include 'administration/footer.html' %}
-
-  {% endblock page_content %}
+{% endblock page_content %}
