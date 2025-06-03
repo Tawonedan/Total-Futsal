@@ -113,23 +113,23 @@
                          <dl>
                             <div class="info-item">
                                 <dt>Status Pesanan:</dt>
-                                <dd><span class="badge badge-<?php echo $status_info_pesanan['badge']; ?> status-badge"><?php echo htmlspecialchars($status_info_pesanan['text']); ?></span></dd>
+                                <dd>
+                                    <p>
+                                        {% if pesanan.status == 1 %}
+                                            <span class="badge badge-success">Berlangsung</span>
+                                        {% elif pesanan.status == 0 %}
+                                            <span class="badge badge-primary">Selesai</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">Dibatalkan</span>
+                                        {% endif %}
+                                    </p>
+                                </dd>
                             </div>
-                            <div class="info-item">
-                                <dt>Status Pembayaran:</dt>
-                                <dd><span class="badge badge-<?php echo (strtolower($status_pembayaran_display) == 'lunas') ? 'success' : 'warning'; ?> status-badge"><?php echo htmlspecialchars($status_pembayaran_display); ?></span></dd>
-                            </div>
-                            <?php if (isset($booking['Tanggal_Pemesanan_Dibuat']) && !empty($booking['Tanggal_Pemesanan_Dibuat']) && $booking['Tanggal_Pemesanan_Dibuat'] != '0000-00-00 00:00:00'): ?>
-                            <div class="info-item mt-2">
-                                <dt>Dipesan pada:</dt>
-                                <dd class="text-muted"><small><?php echo htmlspecialchars(date('d M Y, H:i', strtotime($booking['Tanggal_Pemesanan_Dibuat']))); ?> WIB</small></dd>
-                            </div>
-                            <?php endif; ?>
                         </dl>
                     </div>
                 </div>
                 <div class="card-footer footer-actions">
-                    <a href="history.php" class="btn btn-outline-secondary mr-2">
+                    <a href="{% url 'user_history' %}" class="btn btn-outline-secondary mr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle-fill mr-1" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/></svg>
                         Kembali ke Riwayat
                     </a>

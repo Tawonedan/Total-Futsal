@@ -10,28 +10,8 @@
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
 
-            <!-- <div class="alert-container">
-                <?php
-                if (!empty($error_message_fetch)) {
-                     echo '<div class="alert alert-warning">' . $error_message_fetch . '</div>';
-                }
-                if (isset($_SESSION['success_message_profile'])) {
-                    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' .
-                         htmlspecialchars($_SESSION['success_message_profile']) .
-                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                    unset($_SESSION['success_message_profile']);
-                }
-                if (isset($_SESSION['error_message_profile'])) {
-                     echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' .
-                         htmlspecialchars($_SESSION['error_message_profile']) .
-                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                    unset($_SESSION['error_message_profile']);
-                }
-                ?>
-            </div> -->
-
             <div class="card profile-header-card mb-4">
-                <img src="<?php echo $userFoto; ?>" alt="Foto Profil <?php echo htmlspecialchars($display_nama); ?>" class="profile-img-display">
+                <img src="{{ pesanan.ID_lapangan.foto.url|default:'/media/project_images/images_1.jpeg' }}" alt="Foto Profil " class="profile-img-display">
                 <h2 class="card-title"><?php echo htmlspecialchars($display_nama); ?></h2>
                 <p class="text-muted mb-2"><?php echo htmlspecialchars($display_email); ?></p>
                 <p class="card-text small text-secondary">Selamat datang di halaman profil Anda. Di sini Anda dapat melihat informasi akun dan mengelolanya.</p>
@@ -47,8 +27,8 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Nama:</strong> <?php echo htmlspecialchars($display_nama); ?></li>
-                        <li class="list-group-item"><strong>Email:</strong> <?php echo htmlspecialchars($display_email); ?></li>
+                        <li class="list-group-item"><strong>Nama:</strong> {{ user.Nama}}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ user.email}}</li>
                     </ul>
                 </div>
             </div>
@@ -88,7 +68,7 @@
 </main>
 </div>
 
-{% include 'accounts/footer.html' %}
+{% include 'pages/footer.html' %}
 
 <script src="./js/jquery-3.2.1.slim.min.js"></script>
 <script src="./js/popper.min.js"></script>

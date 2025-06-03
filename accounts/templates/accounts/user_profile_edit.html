@@ -10,26 +10,6 @@
              <h3>Edit Profil Anda</h3>
         </div>
 
-        <!-- <div class="alert-container-profile-edit">
-            <?php
-            if (!empty($fetch_data_error)) {
-                 echo '<div class="alert alert-warning">' . $fetch_data_error . '</div>';
-            }
-            if (isset($_SESSION['success_message_profile'])) {
-                echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' .
-                     htmlspecialchars($_SESSION['success_message_profile']) .
-                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                unset($_SESSION['success_message_profile']);
-            }
-            if (isset($_SESSION['error_message_profile'])) {
-                echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' .
-                     htmlspecialchars($_SESSION['error_message_profile']) .
-                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                unset($_SESSION['error_message_profile']);
-            }
-            ?>
-        </div> -->
-
         <?php if ($user_data_for_form): ?>
         <form action="proses_update_profil_pengguna.php" method="POST" id="editProfilPenggunaForm" enctype="multipart/form-data">
             <input type="hidden" name="user_id_to_edit" value="<?php echo htmlspecialchars($user_id_session); ?>">
@@ -50,12 +30,12 @@
             
             <div class="form-group">
                 <label for="nama_pengguna">Nama Lengkap / Username</label>
-                <input type="text" class="form-control" id="nama_pengguna" name="nama_pengguna" value="<?php echo htmlspecialchars($current_nama_form); ?>" required>
+                <input type="text" class="form-control" id="nama_pengguna" name="nama_pengguna" value="" required>
             </div>
 
             <div class="form-group">
                 <label for="email_pengguna">Alamat Email</label>
-                <input type="email" class="form-control" id="email_pengguna" name="email_pengguna" value="<?php echo htmlspecialchars($current_email_form); ?>" required>
+                <input type="email" class="form-control" id="email_pengguna" name="email_pengguna" value="" required>
             </div>
             
             <hr class="my-4">
@@ -88,11 +68,8 @@
     </div>
 </div>
 
-{% include 'accounts/footer.html' %}
+{% include 'pages/footer.html' %}
 
-<script src="./js/jquery-3.2.1.slim.min.js"></script>
-<script src="./js/popper.min.js"></script>
-<script src="./js/bootstrap.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var customFileInput = document.getElementById('foto_profil_baru');
