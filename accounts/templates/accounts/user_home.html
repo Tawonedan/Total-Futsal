@@ -29,11 +29,11 @@
                 <div class="card action-card">
                     <div class="card-body">
                         <div class="icon-wrapper icon-futsal">
-                            <svg width="64" height="64" fill="currentColor" class="bi bi-dribbble" viewBox="0 0 16 16"><use xlink:href="#dribbble-icon-brand"/></svg>
+                            <svg width="64" height="64" fill="currentColor" class="bi bi-dribbble" viewBox="0 0 16 16"><use xlink:href="#dribbble-icon-brand-about"/></svg>
                         </div>
                         <h5 class="card-title">Sewa Lapangan</h5>
                         <p class="card-text">Temukan dan pesan lapangan futsal atau olahraga lainnya dengan mudah dan cepat.</p>
-                        <a class="btn btn-futsal btn-block" href="{% url 'user_home' %}" role="button">Pesan Lapangan &raquo;</a>
+                        <a class="btn btn-futsal btn-block" href="{% url 'user_book' %}" role="button">Pesan Lapangan &raquo;</a>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                         </div>
                         <h5 class="card-title">Riwayat & Status Booking</h5>
                         <p class="card-text">Lihat riwayat pemesanan Anda dan pantau status booking yang sedang aktif.</p>
-                        <a class="btn btn-status btn-block" href="history.php" role="button">Lihat Riwayat &raquo;</a>
+                        <a class="btn btn-status btn-block" href="{% url 'user_history' %}" role="button">Lihat Riwayat &raquo;</a>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                         </div>
                         <h5 class="card-title">Sewa Peralatan</h5>
                         <p class="card-text">Lihat katalog peralatan pendukung untuk melengkapi permainan Anda.</p>
-                        <a class="btn btn-equipment btn-block" href="peralatan_user.php" role="button">Lihat Peralatan &raquo;</a>
+                        <a class="btn btn-equipment btn-block" href="{% url 'user_book' %}" role="button">Lihat Peralatan &raquo;</a>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
               </div>
               <h3 class="font-weight-bold mt-3 mb-3">2. PILIH LAPANGAN & SESI</h3>
               <p class="text-muted px-3">Jelajahi pilihan lapangan, lihat detail fasilitas, pilih tanggal dan sesi waktu yang Anda inginkan.</p>
-              <p><a class="btn btn-success mt-2 font-weight-bold" href="booking.php" role="button">Pilih Lapangan &raquo;</a></p>
+              <p><a class="btn btn-success mt-2 font-weight-bold" href="{% url 'user_book' %}" role="button">Pilih Lapangan &raquo;</a></p>
             </div>
         </div>
         <div class="col-md-4 mb-4">

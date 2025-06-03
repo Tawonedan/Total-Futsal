@@ -1,8 +1,10 @@
 from django.views import View
 from django.shortcuts import render
 from django.contrib.auth.views import LogoutView
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin # Import LoginRequiredMixin
+from .models import Lapangan, Tambahan, Jadwal
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
+from datetime import date
 
 
 class UserHomeView(LoginRequiredMixin, View):
@@ -31,11 +33,45 @@ class UserAboutView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, self.template_name)
 
+class UserContactView(LoginRequiredMixin, View):
+    template_name = 'accounts/contact.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
 class UserBookView(LoginRequiredMixin, View):
     template_name = 'accounts/book.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        tipe_filter = request.GET.get('tipe', 'semua')
+
+        if tipe_filter == 'semua':
+            lapangan_list = Lapangan.objects.all()
+        else:
+            lapangan_list = Lapangan.objects.filter(Tipe=tipe_filter)
+
+        context = {
+            'lapangan_list': lapangan_list,
+            'filter_tipe_lapangan': tipe_filter,
+        }
+
+        return render(request, self.template_name, context)
+    
+class UserBookDetailView(LoginRequiredMixin, View):
+    template_name = 'accounts/book_detail.html'
+
+    def get(self, request, id):
+        lapangan = get_object_or_404(Lapangan, pk=id)
+        daftar_sesi = Jadwal.objects.all()
+        daftar_item_tambahan = Tambahan.objects.all()
+        context = {
+            'lapangan': lapangan,
+            'daftar_sesi': daftar_sesi,
+            'daftar_item_tambahan': daftar_item_tambahan,
+            'tanggal_main': request.GET.get('tanggal_main', ''),
+        }
+
+        return render(request, self.template_name, context)
 
 
 class UserHistoryView(LoginRequiredMixin, View):

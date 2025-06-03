@@ -1,10 +1,10 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 
 {% block page_content %}
 
   {% include 'accounts/navbar.html' %}
-
 <main role="main" class="container mt-4">
     <div class="page-header-catalog">
         <h1>Katalog Lapangan Olahraga</h1>
@@ -13,49 +13,48 @@
 
     <div class="mb-4 filter-buttons text-center text-md-left">
         <p class="mb-2 d-block d-md-inline mr-md-2">Filter Tipe Lapangan:</p>
-        <a href="field_catalog.php?tipe=semua" class="btn btn-outline-primary btn-filter-tipe <?php if($filter_tipe_lapangan == 'semua') echo 'active'; ?>">Semua</a>
-        <a href="field_catalog.php?tipe=Indoor" class="btn btn-outline-primary btn-filter-tipe <?php if($filter_tipe_lapangan == 'Indoor') echo 'active'; ?>">Indoor</a>
-        <a href="field_catalog.php?tipe=Outdoor" class="btn btn-outline-primary btn-filter-tipe <?php if($filter_tipe_lapangan == 'Outdoor') echo 'active'; ?>">Outdoor</a>
+        <a href="?tipe=semua" class="btn btn-outline-primary btn-filter-tipe {% if filter_tipe_lapangan == 'semua' %}active{% endif %}">Semua</a>
+        <a href="?tipe=Indoor" class="btn btn-outline-primary btn-filter-tipe {% if filter_tipe_lapangan == 'Indoor' %}active{% endif %}">Indoor</a>
+        <a href="?tipe=Outdoor" class="btn btn-outline-primary btn-filter-tipe {% if filter_tipe_lapangan == 'Outdoor' %}active{% endif %}">Outdoor</a>
+
     </div>
 
-    <div class="row" id="field-list-container-catalog">
-        <?php if (mysqli_num_rows($result_lapangan) > 0) : ?>
-            <?php while ($row = mysqli_fetch_assoc($result_lapangan)) : ?>
-            <div class="col-md-6 col-lg-4 mb-4 field-item-catalog">
-                <div class="card field-card">
-                    <img class="card-img-top" 
-                         src="./img/<?php echo !empty($row['foto']) ? htmlspecialchars($row['foto']) : 'Garasi-Futsal.jpg'; ?>" 
-                         alt="Gambar <?php echo htmlspecialchars($row['Nama']); ?>">
-                    <div class="card-body">
-                        <div>
-                            <h5 class="card-title"><?php echo htmlspecialchars($row['Nama']);?></h5>
-                            <p class="field-meta">
-                                <span class="badge badge-info mr-1"><?php echo htmlspecialchars($row['Tipe']);?></span>
-                                <span class="badge badge-secondary"><?php echo htmlspecialchars($row['Jenis']);?></span>
-                            </p>
-                        </div>
-                        <div>
-                            <p class="field-price"><?php echo format_rupiah_catalog($row['Harga']);?> / Sesi (2 Jam)</p>
-                            <a href="field_detail.php?ID_field=<?php echo $row['ID']; ?>" class="btn btn-primary btn-block btn-book">
-                                Lihat Detail & Sesi
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-circle-fill ml-1" viewBox="0 0 16 16">
-                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
-                                </svg>
-                            </a>
-                        </div>
+<div class="row" id="field-list-container-catalog">
+    {% if lapangan_list %}
+        {% for lapangan in lapangan_list %}
+        <div class="col-md-6 col-lg-4 mb-4 field-item-catalog">
+            <div class="card field-card">
+                <img class="card-img-top" 
+                src="{{ lapangan.foto.url|default:'/media/project_images/data_lapangan.jpg' }}"
+                alt="Gambar {{ lapangan.Nama }}">
+                <div class="card-body">
+                    <div>
+                        <h5 class="card-title">{{ lapangan.Nama }}</h5>
+                        <p class="field-meta">
+                            <span class="badge badge-info mr-1">{{ lapangan.Tipe }}</span>
+                            <span class="badge badge-secondary">{{ lapangan.Jenis }}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="field-price">Rp {{ lapangan.Harga|intcomma }} / Sesi (2 Jam)</p>
+                        <a href="{% url 'user_book_detail' lapangan.ID %}" class="btn btn-primary btn-block btn-book">
+                            Lihat Detail & Sesi
+                        </a>
                     </div>
                 </div>
             </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <div class="col-12">
-                <div class="alert alert-info no-fields-alert">
-                    <h4 class="alert-heading">Belum Ada Lapangan</h4>
-                    <p>Saat ini tidak ada lapangan yang tersedia <?php echo ($filter_tipe_lapangan != 'semua') ? "untuk tipe '" . htmlspecialchars($filter_tipe_lapangan) . "'" : ""; ?>.</p>
-                </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info no-fields-alert">
+                <h4 class="alert-heading">Belum Ada Lapangan</h4>
+                <p>Saat ini tidak ada lapangan yang tersedia {% if filter_tipe_lapangan != 'semua' %}untuk tipe '{{ filter_tipe_lapangan }}'{% endif %}.</p>
             </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    {% endif %}
+</div>
+
     <hr class="mt-4 mb-5">
 </main>
 

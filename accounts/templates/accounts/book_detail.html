@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+
+{% block page_content %}
+
+  {% include 'accounts/navbar.html' %}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="field-presentation-card">
+                <img src="{{ lapangan.foto.url|default:'/media/project_images/data_lapangan.jpg' }}" class="field-image-detail" alt="Gambar {{ lapangan.Nama }}">
+                <div class="field-info">
+                    <h2>{{ lapangan.Nama }}</h2>
+                    <p class="price">{{ lapangan.Harga }} / Sesi (2 Jam)</p>
+
+                    <p class="text-muted small">Tipe: {{ lapangan.Tipe }} | Jenis: {{ lapangan.Jenis }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card booking-form-card">
+                <div class="card-header text-center">Formulir Pemesanan</div>
+                <div class="card-body p-4">
+                    <div class="alert-container-form">
+                    <form method="POST" action="proses_booking_sesi.php" id="bookingFormWithSession">
+                        {% csrf_token %}
+                        <h5 class="form-section-title">Data Pemesan</h5>
+                        <div class="form-group">
+                            <label for="name_display">Nama Pemesan</label>
+                            <input type="text" id="name_display" class="form-control" value="{{ user.Nama }}" readonly>
+                            <input type="hidden" name="nama_pemesan" value="{{ user.Nama }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">No. Telepon Aktif</label>
+                            <input type="number" id="phone" class="form-control" placeholder="Contoh: 08123456789" required name="telepon">
+                        </div>
+                        
+                        <h5 class="form-section-title">Pilih Tanggal & Sesi</h5>
+                        <div class="form-group">
+                            <label for="tanggal_main">Pilih Tanggal Main</label>
+                            <input type="date"
+                                   id="tanggal_main"
+                                   class="form-control"
+                                   required
+                                   name="tanggal_main"
+                                   value="{{ tanggal_main }}">
+                        </div>
+
+
+                        <div id="sesi-container">
+                            <label>Pilih Sesi (Durasi 2 Jam)</label>
+                            <div class="session-grid">
+                                {% if daftar_sesi %}
+                                    {% for sesi in daftar_sesi %}
+                                      <button type="button"
+                                              class="btn session-btn"
+                                              data-sesi-val="{{ sesi.mulai }}">
+                                        {{ sesi.Jadwal }} 
+                                      </button>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">Tidak ada definisi sesi yang valid.</p>
+                                {% endif %}
+                            </div>
+                        
+                            <input type="hidden" name="sesi_waktu_mulai" id="sesi_waktu_mulai" value="">
+                            <div id="error-sesi" class="text-danger small mt-1" style="display:none;">
+                                Harap pilih satu sesi.
+                            </div>
+                        </div>
+                        
+                        <h5 class="form-section-title">Tambahan (Opsional)</h5>
+                        <div class="row">
+                            {% if daftar_item_tambahan %}
+                                {% for item in daftar_item_tambahan %}
+                                    <div class="col-md-6 form-group">
+                                        <label for="tambahan_{{ item.ID }}">
+                                            {{ item.Nama }} ({{ item.Harga|intcomma }}/item)
+                                        </label>
+                                        <input type="number" 
+                                               id="tambahan_{{ item.ID }}" 
+                                               class="form-control form-control-sm jumlah-tambahan-input" 
+                                               placeholder="Jumlah" 
+                                               name="jumlah_tambahan[{{ item.ID }}]" 
+                                               min="0" 
+                                               value="0"
+                                               data-harga_item="{{ item.Harga }}">
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12">
+                                    <p class="text-muted"><i>Tidak ada item tambahan yang tersedia.</i></p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        
+                        <hr class="my-4">
+                        <h5 class="form-section-title">Rincian Pembayaran</h5>
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="total">Total Biaya</label>
+                                <input type="text" id="total" class="form-control font-weight-bold" value="Rp 0" readonly name="total_biaya_display">
+                                <input type="hidden" name="total_biaya" id="total_biaya_hidden">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="pay">Jumlah Bayar</label>
+                                <input type="number" id="pay" class="form-control" placeholder="Masukkan nominal" required name="jumlah_bayar" min="0">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="kembali">Kembalian</label>
+                                <input type="text" id="kembali" class="form-control" value="Rp 0" readonly name="kembalian_display">
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" id="field_price_per_session" value="{{ lapangan.Harga }}" name="harga_lapangan_sesi">
+                        <input type="hidden" value="{{ lapangan.ID }}" name="id_lapangan">
+                        
+                        <button class="btn btn-lg btn-primary btn-block mt-4" type="submit" name="book_session" id="submitBookingButton">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-calendar-check-fill mr-2" viewBox="0 0 16 16"><path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-5.146-5.146-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708.708z"/></svg>
+                            Pesan Sesi Ini
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hargaLapanganPerSesi = parseFloat(document.getElementById('field_price_per_session').value) || 0;
+    
+    const tanggalMainInput = document.getElementById('tanggal_main');
+    const sesiContainer = document.getElementById('sesi-container');
+    const hiddenSesiInput = document.getElementById('sesi_waktu_mulai');
+    const itemTambahanInputs = document.querySelectorAll('.jumlah-tambahan-input');
+    const payInput = document.getElementById('pay');
+    const totalOutput = document.getElementById('total');
+    const totalHiddenOutput = document.getElementById('total_biaya_hidden');
+    const kembaliOutput = document.getElementById('kembali');
+    const errorSesi = document.getElementById('error-sesi');
+    const bookingForm = document.getElementById('bookingFormWithSession');
+    const submitBookingButton = document.getElementById('submitBookingButton');
+
+    let sesiTerpilih = null; 
+    let hargaSesiAktif = 0;
+    let numerikTotalKeseluruhan = 0;
+
+
+    function formatRupiahJS(angka) {
+        if (isNaN(angka) || angka === null) return "Rp 0";
+        return "Rp " + parseFloat(angka).toLocaleString('id-ID');
+    }
+
+    function updateBiayaTotal() {
+        numerikTotalKeseluruhan = 0;
+        if (sesiTerpilih) {
+            numerikTotalKeseluruhan += hargaLapanganPerSesi; 
+        }
+        
+        itemTambahanInputs.forEach(function(input) {
+            const jumlah = parseInt(input.value) || 0;
+            const hargaSatuan = parseFloat(input.getAttribute('data-harga_item')) || 0;
+            numerikTotalKeseluruhan += jumlah * hargaSatuan;
+        });
+        
+        totalOutput.value = formatRupiahJS(numerikTotalKeseluruhan);
+        if(totalHiddenOutput) totalHiddenOutput.value = numerikTotalKeseluruhan;
+        updateKembalian();
+    }
+
+    function updateKembalian() {
+        const jumlahBayar = parseFloat(payInput.value) || 0;
+        if (!isNaN(jumlahBayar) && jumlahBayar > 0) {
+            if (jumlahBayar >= numerikTotalKeseluruhan) {
+                kembaliOutput.value = formatRupiahJS(jumlahBayar - numerikTotalKeseluruhan);
+            } else {
+                kembaliOutput.value = "Bayar kurang";
+            }
+        } else {
+            kembaliOutput.value = "Rp 0";
+        }
+    }
+
+    if (tanggalMainInput) {
+        tanggalMainInput.addEventListener('change', function() {
+            const selectedDateValue = this.value;
+            if (selectedDateValue) {
+                const lapanganId = "{{ lapangan.ID }}";  // dari context Django
+                window.location.href = `/booking/${lapanganId}/?tanggal_main=${selectedDateValue}`;
+            } else {
+                if(sesiContainer) sesiContainer.innerHTML = '<p class="text-muted"><i>Pilih tanggal terlebih dahulu untuk melihat sesi yang tersedia.</i></p>';
+                if(hiddenSesiInput) hiddenSesiInput.value = '';
+                sesiTerpilih = null;
+                updateBiayaTotal();
+            }
+        });
+    }
+
+    const sessionButtons = sesiContainer.querySelectorAll('.session-btn:not(.disabled)');
+    sessionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            sessionButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            sesiTerpilih = this.getAttribute('data-sesi-val');
+            if(hiddenSesiInput) hiddenSesiInput.value = sesiTerpilih;
+            if(errorSesi) errorSesi.style.display = 'none';
+            updateBiayaTotal();
+        });
+    });
+    
+    itemTambahanInputs.forEach(function(input) {
+        input.addEventListener('input', updateBiayaTotal);
+    });
+
+    if(payInput) payInput.addEventListener('input', updateKembalian);
+
+    const activeSessionButton = sesiContainer.querySelector('.session-btn.active');
+    if (activeSessionButton) {
+        sesiTerpilih = activeSessionButton.getAttribute('data-sesi-val');
+        if(hiddenSesiInput) hiddenSesiInput.value = sesiTerpilih;
+    }
+    updateBiayaTotal(); 
+
+if (bookingForm) {
+    bookingForm.addEventListener('submit', function(event) {
+        if (selectedDateExists && !hiddenSesiInput.value) {
+            if(errorSesi) errorSesi.style.display = 'block';
+            event.preventDefault(); 
+            alert('Harap pilih salah satu sesi waktu terlebih dahulu.');
+        }
+        if (parseFloat(payInput.value) < numerikTotalKeseluruhan) {
+            event.preventDefault();
+            alert('Jumlah bayar kurang dari total biaya. Mohon periksa kembali.');
+        }
+    });
+}
+    
+    window.setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert-container-form .alert');
+        alerts.forEach(function(alert) {
+            $(alert).fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        });
+    }, 5000);
+});
+</script>
+
+<style>
+        body { background-color: #f8f9fa; padding-top: 70px; }
+        .navbar-brand-custom { 
+            font-weight: bold; 
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand-custom svg {
+            margin-right: 8px;
+        }
+        .field-presentation-card { background-color: #fff; border-radius: .5rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
+        .field-image-detail { width: 100%; max-height: 400px; object-fit: cover; border-radius: .5rem .5rem 0 0; }
+        .field-info { padding: 1.5rem; }
+        .field-info h2 { font-weight: bold; color: #343a40; margin-bottom: .5rem; }
+        .field-info .price { font-size: 1.5rem; font-weight: bold; color: #28a745; margin-bottom: 1rem; }
+        .booking-form-card { background-color: #fff; border-radius: .5rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); margin-top: 1.5rem; }
+        .booking-form-card .card-header { background-color: #007bff; color: white; font-weight: bold; font-size: 1.2rem; }
+        .form-section-title { font-size: 1.1rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; color: #495057; border-bottom: 1px solid #e9ecef; padding-bottom: 0.5rem; }
+        .session-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+        .session-btn { padding: 0.6rem; text-align: center; border: 1px solid #007bff; color: #007bff; background-color: white; border-radius: .25rem; cursor: pointer; transition: all 0.2s ease; font-size:0.9rem; }
+        .session-btn:hover:not(.disabled):not(.active) { background-color: #e6f2ff; }
+        .session-btn.active { background-color: #007bff; color: white; font-weight: bold; }
+        .session-btn.disabled { background-color: #e9ecef; color: #6c757d; border-color: #ced4da; cursor: not-allowed; opacity: 0.7; }
+        input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .alert-container-form { margin-bottom: 1rem; }
+</style>
+
+  {% endblock page_content %}
