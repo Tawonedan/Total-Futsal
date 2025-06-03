@@ -1,10 +1,11 @@
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.views import LogoutView
-from .models import Lapangan, Tambahan, Jadwal
+from .models import Lapangan, Tambahan, Jadwal, Pesanan, PesananTambahan
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from datetime import date
+from datetime import time
+import datetime
 
 
 class UserHomeView(LoginRequiredMixin, View):
@@ -72,6 +73,50 @@ class UserBookDetailView(LoginRequiredMixin, View):
         }
 
         return render(request, self.template_name, context)
+
+class UserBookCreateView(LoginRequiredMixin, View):
+    def post(self, request):
+        user = request.user
+        lapangan_id = request.POST.get('id_lapangan')
+        tanggal = request.POST.get('tanggal_main')
+        jam_mulai = request.POST.get('sesi_waktu_mulai')
+        telepon = request.POST.get('telepon')
+        bayar = int(request.POST.get('jumlah_bayar'))
+        total = int(request.POST.get('total_biaya'))
+
+        lapangan = Lapangan.objects.get(pk=lapangan_id)
+        jadwal = Jadwal.objects.get(mulai=jam_mulai)
+        jam_obj = datetime.datetime.strptime(jam_mulai, "%H:%M").time()
+
+        pesanan = Pesanan.objects.create(
+            id_user=user,
+            ID_lapangan=lapangan,
+            id_jadwal=jadwal,
+            Nama=user.Nama,
+            Telepon=telepon,
+            Jam=jam_obj,
+            durasi=2,
+            Tanggal=tanggal,
+            total_harga=total,
+            bayar=bayar,
+            kembali=bayar - total,
+            status=1
+        )
+
+        # Tambahan
+        for key, val in request.POST.items():
+            if key.startswith('jumlah_tambahan['):
+                id_item = key.replace('jumlah_tambahan[', '').replace(']', '')
+                qty = int(val)
+                if qty > 0:
+                    item = Tambahan.objects.get(pk=id_item)
+                    PesananTambahan.objects.create(
+                        pesanan=pesanan,
+                        item=item,
+                        jumlah=qty
+                    )
+
+        return redirect('user_history') 
 
 
 class UserHistoryView(LoginRequiredMixin, View):

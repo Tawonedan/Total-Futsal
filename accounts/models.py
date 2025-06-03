@@ -115,23 +115,12 @@ class Tambahan(models.Model):
   def __str__(self):
     return self.Nama
 
-class PesananTambahan(models.Model):
-  id = models.AutoField(primary_key=True)
-  id_tambahan = models.ForeignKey(Tambahan, on_delete=models.CASCADE, db_column='id_tambahan')
-
-  class Meta:
-    db_table = 'pesanan_tambahan'
-    verbose_name_plural = "Pesanan Tambahan"
-
-  def __str__(self):
-    return f"Pesanan Tambahan ID: {self.id} - Tambahan ID: {self.id_tambahan.ID}"
-
 class Pesanan(models.Model):
   ID = models.AutoField(primary_key=True)
   id_user = models.ForeignKey(Pengguna, on_delete=models.CASCADE, db_column='id_user')
   ID_lapangan = models.ForeignKey(Lapangan, on_delete=models.CASCADE, db_column='ID_lapangan')
   id_jadwal = models.ForeignKey(Jadwal, on_delete=models.CASCADE, db_column='id_jadwal')
-  id_tambahan = models.ForeignKey(PesananTambahan, on_delete=models.CASCADE, db_column='id_tambahan')
+  tambahan_items = models.ManyToManyField(Tambahan, through='PesananTambahan')
   Nama = models.CharField(max_length=20)
   Telepon = models.CharField(max_length=20)
   Jam = models.TimeField()
@@ -148,3 +137,11 @@ class Pesanan(models.Model):
 
   def __str__(self):
     return f"Pesanan ID: {self.ID} - {self.Nama}"
+  
+class PesananTambahan(models.Model):
+    pesanan = models.ForeignKey(Pesanan, on_delete=models.CASCADE)
+    item = models.ForeignKey(Tambahan, on_delete=models.CASCADE, default=1)
+
+    class Meta:
+        db_table = 'pesanan_tambahan'
+        verbose_name_plural = "Pesanan Tambahan"

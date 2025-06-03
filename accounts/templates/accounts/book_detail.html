@@ -25,7 +25,7 @@
                 <div class="card-header text-center">Formulir Pemesanan</div>
                 <div class="card-body p-4">
                     <div class="alert-container-form">
-                    <form method="POST" action="proses_booking_sesi.php" id="bookingFormWithSession">
+                    <form method="POST" action="{% url 'user_book_process' %}" id="bookingFormWithSession">
                         {% csrf_token %}
                         <h5 class="form-section-title">Data Pemesan</h5>
                         <div class="form-group">
@@ -57,7 +57,7 @@
                                     {% for sesi in daftar_sesi %}
                                       <button type="button"
                                               class="btn session-btn"
-                                              data-sesi-val="{{ sesi.mulai }}">
+                                              data-sesi-val="{{ sesi.mulai|time:'H:i' }}">
                                         {{ sesi.Jadwal }} 
                                       </button>
                                     {% endfor %}
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tanggalMainInput.addEventListener('change', function() {
             const selectedDateValue = this.value;
             if (selectedDateValue) {
-                const lapanganId = "{{ lapangan.ID }}";  // dari context Django
+                const lapanganId = "{{ lapangan.ID }}";  
                 window.location.href = `/booking/${lapanganId}/?tanggal_main=${selectedDateValue}`;
             } else {
                 if(sesiContainer) sesiContainer.innerHTML = '<p class="text-muted"><i>Pilih tanggal terlebih dahulu untuk melihat sesi yang tersedia.</i></p>';
